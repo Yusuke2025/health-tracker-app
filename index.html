@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康管理アプリ</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- ナビゲーション -->
+        <nav class="nav">
+            <div class="nav__brand">
+                <h1>健康管理</h1>
+            </div>
+            <div class="nav__menu">
+                <button class="nav__item nav__item--active" data-page="dashboard">
+                    <span class="nav__icon">🏠</span>
+                    <span class="nav__text">ホーム</span>
+                </button>
+                <button class="nav__item" data-page="weight">
+                    <span class="nav__icon">⚖️</span>
+                    <span class="nav__text">体重</span>
+                </button>
+                <button class="nav__item" data-page="food">
+                    <span class="nav__icon">🍽️</span>
+                    <span class="nav__text">食事</span>
+                </button>
+                <button class="nav__item" data-page="exercise">
+                    <span class="nav__icon">🏃</span>
+                    <span class="nav__text">運動</span>
+                </button>
+                <button class="nav__item" data-page="stats">
+                    <span class="nav__icon">📊</span>
+                    <span class="nav__text">統計</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- メインコンテンツ -->
+        <main class="main">
+            <!-- ダッシュボード -->
+            <section id="dashboard" class="page page--active">
+                <div class="container">
+                    <h2>今日の概要</h2>
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>今日の体重</h3>
+                                <div class="metric">
+                                    <span class="metric__value" id="today-weight">--</span>
+                                    <span class="metric__unit">kg</span>
+                                </div>
+                                <div class="metric-sub">
+                                    <span>BMI: </span>
+                                    <span id="today-bmi">--</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>摂取カロリー</h3>
+                                <div class="metric">
+                                    <span class="metric__value" id="today-calories">0</span>
+                                    <span class="metric__unit">kcal</span>
+                                </div>
+                                <div class="metric-sub">
+                                    <span>食事回数: </span>
+                                    <span id="today-meals">0</span>
+                                    <span>回</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>消費カロリー</h3>
+                                <div class="metric">
+                                    <span class="metric__value" id="today-exercise-calories">0</span>
+                                    <span class="metric__unit">kcal</span>
+                                </div>
+                                <div class="metric-sub">
+                                    <span>運動時間: </span>
+                                    <span id="today-exercise-time">0</span>
+                                    <span>分</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-charts">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>体重推移（7日間）</h3>
+                                <canvas id="weight-chart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 体重記録 -->
+            <section id="weight" class="page">
+                <div class="container">
+                    <h2>体重記録</h2>
+                    <div class="form-section">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>体重を入力</h3>
+                                <form id="weight-form">
+                                    <div class="form-group">
+                                        <label class="form-label">体重 (kg)</label>
+                                        <input type="number" step="0.1" class="form-control" id="weight-input" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">身長 (cm)</label>
+                                        <input type="number" class="form-control" id="height-input" placeholder="BMI計算用">
+                                    </div>
+                                    <button type="submit" class="btn btn--primary">記録する</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="records-section">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>記録一覧</h3>
+                                <div id="weight-records" class="records"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 食事記録 -->
+            <section id="food" class="page">
+                <div class="container">
+                    <h2>食事記録</h2>
+                    <div class="form-section">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>食事を記録</h3>
+                                <form id="food-form">
+                                    <div class="form-group">
+                                        <label class="form-label">食事画像</label>
+                                        <input type="file" class="form-control" id="food-image" accept="image/*">
+                                        <div id="image-preview" class="image-preview"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">食事内容</label>
+                                        <select class="form-control" id="food-select" required>
+                                            <option value="">選択してください</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">食事タイプ</label>
+                                        <select class="form-control" id="meal-type">
+                                            <option value="朝食">朝食</option>
+                                            <option value="昼食">昼食</option>
+                                            <option value="夕食">夕食</option>
+                                            <option value="間食">間食</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">カロリー</label>
+                                        <input type="number" class="form-control" id="calories-input" readonly>
+                                    </div>
+                                    <button type="submit" class="btn btn--primary">記録する</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="records-section">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>今日の食事</h3>
+                                <div id="food-records" class="records"></div>
+                                <div class="total-calories">
+                                    <strong>合計カロリー: <span id="total-calories">0</span> kcal</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 運動記録 -->
+            <section id="exercise" class="page">
+                <div class="container">
+                    <h2>運動記録</h2>
+                    <div class="form-section">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>運動を記録</h3>
+                                <form id="exercise-form">
+                                    <div class="form-group">
+                                        <label class="form-label">運動種類</label>
+                                        <select class="form-control" id="exercise-select" required>
+                                            <option value="">選択してください</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">時間 (分)</label>
+                                        <input type="number" class="form-control" id="duration-input" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">消費カロリー</label>
+                                        <input type="number" class="form-control" id="exercise-calories" readonly>
+                                    </div>
+                                    <button type="submit" class="btn btn--primary">記録する</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="records-section">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>今日の運動</h3>
+                                <div id="exercise-records" class="records"></div>
+                                <div class="total-calories">
+                                    <strong>合計消費カロリー: <span id="total-exercise-calories">0</span> kcal</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 統計 -->
+            <section id="stats" class="page">
+                <div class="container">
+                    <h2>統計・グラフ</h2>
+                    <div class="stats-grid">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>体重推移</h3>
+                                <canvas id="stats-weight-chart" height="300"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>週間カロリー摂取量</h3>
+                                <canvas id="stats-calories-chart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
